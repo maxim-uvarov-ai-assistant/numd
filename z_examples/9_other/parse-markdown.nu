@@ -1,6 +1,6 @@
 use std/iter scan
 
-open nushell_readme.md
+open --raw nushell_readme.md
 | lines
 | each { str substring ..20 }
 | wrap content

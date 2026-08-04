@@ -1,6 +1,6 @@
 use ../../numd
 
-let parse = open example.md
+let parse = open --raw example.md
 | numd parse-frontmatter
 
 $parse | print $in

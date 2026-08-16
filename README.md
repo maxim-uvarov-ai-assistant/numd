@@ -15,12 +15,12 @@ cd numd
 use numd
 
 # run it on any file to check (--echo outputs to stdout without saving)
-numd run z_examples/1_simple_markdown/simple_markdown.md --echo
+numd render z_examples/1_simple_markdown/simple_markdown.md --echo
 ```
 
 ## How it works
 
-`numd run` parses the initial file ([example](/z_examples/1_simple_markdown/simple_markdown.md)), generates a script to execute the found commands ([example](/z_examples/1_simple_markdown/simple_markdown.md_intermed.nu)), executes this script in a new nushell instance, captures the results, updates the initial document accordingly, and/or outputs the resulting document into the terminal along with basic changes [stats](#stats-of-changes).
+`numd render` parses the initial file ([example](/z_examples/1_simple_markdown/simple_markdown.md)), generates a script to execute the found commands ([example](/z_examples/1_simple_markdown/simple_markdown.md_intermed.nu)), executes this script in a new nushell instance, captures the results, updates the initial document accordingly, and/or outputs the resulting document into the terminal along with basic changes [stats](#stats-of-changes).
 
 Experienced nushell users can understand the logic better by looking at [examples](./z_examples/). Especially, seeing [numd in action describing its own commands](./z_examples/2_numd_commands_explanations/numd_commands_explanations.md).
 
@@ -41,13 +41,13 @@ Experienced nushell users can understand the logic better by looking at [example
 Besides code blocks, `numd` can maintain stretches of plain markdown. Write a one-line HTML comment with a Nushell command:
 
 ```markdown
-<!-- numd-gen: use numd; numd doc 'numd run' -->
+<!-- numd-gen: use numd; numd doc 'numd render' -->
 ```
 
-On the next `numd run` the marker expands into a start/end pair, with the command's stdout spliced between them as raw markdown (no fences, no `# =>`). Every following run replaces the content with fresh output, so `git diff` shows the drift:
+On the next `numd render` the marker expands into a start/end pair, with the command's stdout spliced between them as raw markdown (no fences, no `# =>`). Every following run replaces the content with fresh output, so `git diff` shows the drift:
 
 ```markdown
-<!-- numd-gen-start: use numd; numd doc 'numd run' -->
+<!-- numd-gen-start: use numd; numd doc 'numd render' -->
 …generated markdown…
 <!-- numd-gen-end -->
 ```
@@ -56,15 +56,15 @@ On the next `numd run` the marker expands into a start/end pair, with the comman
 - Fenced code blocks inside a region are content, never executed.
 - `numd clear-outputs` empties region content by default (the markers stay, so the next run refills them); `--keep-generated` keeps it.
 
-The command reference sections in this README — the `numd run` section right below, `numd clear-outputs`, and the rest — are such regions built on `numd doc`: `numd doc 'numd run'` renders docs for one command, `numd doc numd` for a whole module (`--header-level` sets the header depth, default 3).
+The command reference sections in this README — the `numd render` section right below, `numd clear-outputs`, and the rest — are such regions built on `numd doc`: `numd doc 'numd render'` renders docs for one command, `numd doc numd` for a whole module (`--header-level` sets the header depth, default 3).
 
-<!-- numd-gen-start: use numd; numd doc 'numd run' -->
-### `numd run`
+<!-- numd-gen-start: use numd; numd doc 'numd render' -->
+### `numd render`
 
 Run Nushell code blocks in a markdown file, output results back to the `.md`, and optionally to terminal
 
 ```nushell no-run
-numd run <file>    # `nothing -> string`, `nothing -> nothing`, `nothing -> record`, `nothing -> table<block_index: int, infostring: string, code: string>`
+numd render <file>    # `nothing -> string`, `nothing -> nothing`, `nothing -> record`, `nothing -> table<block_index: int, infostring: string, code: string>`
 ```
 
 **Parameters:**
@@ -88,13 +88,13 @@ numd run <file>    # `nothing -> string`, `nothing -> nothing`, `nothing -> reco
 update readme
 
 ```nushell no-run
-numd run README.md
+numd render README.md
 ```
 
 preview which blocks would execute, without running them
 
 ```nushell no-run
-numd run --dry-run README.md
+numd render --dry-run README.md
 ```
 <!-- numd-gen-end -->
 
@@ -121,7 +121,7 @@ By default, `numd` provides basic stats on changes made (when not using `--echo`
 ```nushell
 # Running without --echo saves the file and returns stats
 let path = [z_examples 1_simple_markdown simple_markdown_with_no_output.md] | path join
-numd run $path --ignore-git-check
+numd render $path --ignore-git-check
 # => ╭──────────────────┬───────────────────────────────────╮
 # => │ filename         │ simple_markdown_with_no_output.md │
 # => │ nushell_blocks   │ 3                                 │
@@ -143,7 +143,7 @@ let path = $nu.temp-dir | path join simple_nu_table.md
 "```nushell\n[[a b c]; [1 2 3]]\n```\n" | save -f $path
 
 # let's run this file to see its outputs (--echo outputs to stdout without saving)
-numd run $path --echo --no-stats --eval "
+numd render $path --echo --no-stats --eval "
     $env.config.footer_mode = 'never'
     $env.config.table.header_on_separator = false
     $env.config.table.index_mode = 'never'
@@ -230,7 +230,7 @@ git tag | lines | sort -n | last
 # output the result of execution to terminal without updating the file (--echo implies no save)
 [z_examples 1_simple_markdown simple_markdown.md]
 | path join
-| numd run $in --echo
+| numd render $in --echo
 ```
 
 ## Development and testing
@@ -261,7 +261,7 @@ Integration tests run all example files in `z_examples/` through numd and report
 The committed outputs were produced with the Nushell version below. When a Nushell upgrade changes rendering, the examples change together with this line, so such a diff explains itself:
 
 <!-- numd-gen-start: version | get version -->
-0.114.1
+0.115.0
 <!-- numd-gen-end -->
 
 ```nushell no-run

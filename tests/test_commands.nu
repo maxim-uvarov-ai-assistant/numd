@@ -3,8 +3,6 @@ use std/testing *
 
 # Import all functions from commands.nu (including internals not re-exported via mod.nu)
 use ../numd/commands.nu *
-# Why: 0.114 added a builtin `run` (parser keyword) that shadows a bare `run`; call numd's namespaced
-use ../numd/commands.nu
 
 # =============================================================================
 # Tests for parse-markdown-to-blocks
@@ -581,7 +579,7 @@ def "dry-run returns would-execute blocks without executing" [] {
     let file = mktemp --tmpdir --suffix .md
     $md | save --force $file
 
-    let result = commands run --dry-run $file
+    let result = render --dry-run $file
 
     rm $file
 
@@ -675,7 +673,7 @@ def "dry-run returns region payload as code" [] {
     let file = mktemp --tmpdir --suffix .md
     $md | save --force $file
 
-    let result = commands run --dry-run $file
+    let result = render --dry-run $file
 
     rm $file
 
@@ -691,7 +689,7 @@ def "region content from a string stream keeps the end marker on its own line" [
     let file = mktemp --tmpdir --suffix .md
     $md | save --force $file
 
-    let result = commands run $file --echo --no-stats
+    let result = render $file --echo --no-stats
 
     rm $file
 

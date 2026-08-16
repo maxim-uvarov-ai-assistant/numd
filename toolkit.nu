@@ -136,14 +136,14 @@ def collect-integration-results-inner [--update]: nothing -> table {
                 | save -f $strip_markdown_path
 
                 # Run files with config set
-                numd run $file --save-intermed-script $'($file)_intermed.nu' --eval (open -r ([z_examples numd_config_example1.nu] | path join)) --ignore-git-check
+                numd render $file --save-intermed-script $'($file)_intermed.nu' --eval (open -r ([z_examples numd_config_example1.nu] | path join)) --ignore-git-check
             }
         }
         # Run file with customized width of table
         | append (
             run-integration-test ($path_simple_table | build-modified-path --suffix '_customized_width20') {
                 let target = $path_simple_table | build-modified-path --suffix '_customized_width20'
-                numd run $path_simple_table --echo --no-stats --eval '$env.numd.table-width = 20'
+                numd render $path_simple_table --echo --no-stats --eval '$env.numd.table-width = 20'
                 | ansi strip
                 | save -f $target
             }
@@ -152,7 +152,7 @@ def collect-integration-results-inner [--update]: nothing -> table {
         | append (
             run-integration-test ($path_simple_table | build-modified-path --suffix '_customized_example_config') {
                 let target = $path_simple_table | build-modified-path --suffix '_customized_example_config'
-                numd run $path_simple_table --echo --no-stats --eval (open -r ([z_examples numd_config_example2.nu] | path join))
+                numd render $path_simple_table --echo --no-stats --eval (open -r ([z_examples numd_config_example2.nu] | path join))
                 | ansi strip
                 | save -f $target
             }
@@ -160,7 +160,7 @@ def collect-integration-results-inner [--update]: nothing -> table {
         # Run run-once test via --echo (file mutates by design, so we assert on output instead)
         | append (
             run-integration-test 'z_examples/6_edge_cases/run_once.md' {
-                let output = numd run z_examples/6_edge_cases/run_once.md --echo --no-stats
+                let output = numd render z_examples/6_edge_cases/run_once.md --echo --no-stats
                 if ($output !~ '```nu no-run') or ($output =~ '```nu run-once') {
                     error make {msg: 'run-once was not rewritten to no-run'}
                 }
@@ -169,7 +169,7 @@ def collect-integration-results-inner [--update]: nothing -> table {
         # Run readme
         | append (
             run-integration-test 'README.md' {
-                numd run README.md --eval (open -r ([z_examples numd_config_example1.nu] | path join)) --ignore-git-check
+                numd render README.md --eval (open -r ([z_examples numd_config_example1.nu] | path join)) --ignore-git-check
             }
         )
     )

@@ -11,10 +11,10 @@ use ../numd/doc.nu *
 
 @test
 def "doc renders a single command" [] {
-    let result = numd doc 'numd run'
+    let result = numd doc 'numd render'
 
-    assert ($result =~ '^### `numd run`')
-    assert ($result =~ '```nushell no-run\nnumd run <file>    # `nothing -> string`, `nothing -> nothing`, `nothing -> record`')
+    assert ($result =~ '^### `numd render`')
+    assert ($result =~ '```nushell no-run\nnumd render <file>    # `nothing -> string`, `nothing -> nothing`, `nothing -> record`')
     assert ($result =~ '\*\*Parameters:\*\*\n\n- `file: path` — path to a')
     assert ($result =~ '- `--dry-run` — return blocks')
 }
@@ -41,9 +41,9 @@ def "doc omits the io comment when the only signature is any -> any" [] {
 
 @test
 def "doc renders examples as inert fences" [] {
-    let result = numd doc 'numd run'
+    let result = numd doc 'numd render'
 
-    assert ($result =~ 'update readme\n\n```nushell no-run\nnumd run README.md\n```')
+    assert ($result =~ 'update readme\n\n```nushell no-run\nnumd render README.md\n```')
 }
 
 @test
@@ -57,16 +57,16 @@ def "doc renders flag defaults" [] {
 def "doc renders every command of a module" [] {
     let result = numd doc numd
 
-    assert ($result =~ '### `numd run`')
+    assert ($result =~ '### `numd render`')
     assert ($result =~ '### `numd clear-outputs`')
     assert ($result =~ '### `numd doc`')
 }
 
 @test
 def "doc respects header level" [] {
-    let result = numd doc 'numd run' --header-level 2
+    let result = numd doc 'numd render' --header-level 2
 
-    assert ($result =~ '^## `numd run`')
+    assert ($result =~ '^## `numd render`')
 }
 
 # overloads sharing an input type collapse in `scope commands`; all four must still render
@@ -81,11 +81,11 @@ def "doc keeps every declared io overload in order" [] {
 
 @test
 def "doc omits the header with --no-header" [] {
-    let result = numd doc 'numd run' --no-header
+    let result = numd doc 'numd render' --no-header
 
-    assert (not ($result =~ '`numd run`'))
+    assert (not ($result =~ '`numd render`'))
     # the reference itself (usage fence) is still emitted
-    assert ($result =~ '```nushell no-run\nnumd run <file>')
+    assert ($result =~ '```nushell no-run\nnumd render <file>')
 }
 
 @test

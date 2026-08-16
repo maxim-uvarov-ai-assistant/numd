@@ -10,13 +10,13 @@ numd is a Nushell module for creating reproducible Markdown documents. It execut
 
 ```nushell
 # Run numd on a markdown file (updates file with execution results)
-use numd; numd run README.md
+use numd; numd render README.md
 
 # Preview mode (output to stdout, don't save)
-use numd; numd run README.md --echo
+use numd; numd render README.md --echo
 
 # Dry run: return blocks that would execute (block_index, infostring, code), execute nothing
-use numd; numd run README.md --dry-run
+use numd; numd render README.md --dry-run
 
 # Run tests (executes all example files and reports changes)
 nu toolkit.nu test --json
@@ -32,7 +32,7 @@ use numd; numd clear-outputs path/to/file.md --strip-markdown --echo
 
 ### Module Structure (`numd/`)
 
-- **mod.nu**: Entry point exporting user-friendly commands (`run`, `clear-outputs`, etc.)
+- **mod.nu**: Entry point exporting user-friendly commands (`render`, `clear-outputs`, etc.)
 - **plumbing.nu**: Low-level pipeline commands for advanced usage/scripting
 - **commands.nu**: Core implementation containing all command logic
 - **doc.nu**: `doc` command rendering markdown docs for a module or command from `scope` data
@@ -63,7 +63,7 @@ plumbing parse-file file.md | plumbing strip-outputs | plumbing to-numd-script
 ```
 
 The high-level commands use these internally:
-- `run` = `parse-file | execute-blocks | to-markdown`
+- `render` = `parse-file | execute-blocks | to-markdown`
 - `clear-outputs` = `parse-file | strip-outputs | to-markdown`
 
 ### Core Processing Pipeline (in `commands.nu`)
@@ -126,7 +126,7 @@ Unit tests use [nutest](https://github.com/vyadh/nutest) framework. Tests import
 The `test-integration` command:
 1. Runs all example files in `z_examples/` through numd
 2. Generates stripped `.nu` versions in `z_examples/99_strip_markdown/`
-3. Runs `numd run README.md` to update README with latest outputs
+3. Runs `numd render README.md` to update README with latest outputs
 4. Reports Levenshtein distance and diff stats to detect changes
 
 Example files serve as integration tests - use both the Levenshtein stats and `git diff` to verify changes.
@@ -160,10 +160,10 @@ By default, numd runs intermediate scripts with `nu -n` (no config files) for re
 Use `--eval` to prepend Nushell code to the intermediate script:
 ```nushell
 # Inline code
-numd run README.md --eval '$env.numd.table-width = 80'
+numd render README.md --eval '$env.numd.table-width = 80'
 
 # From config file
-numd run README.md --eval (open -r z_examples/numd_config_example1.nu)
+numd render README.md --eval (open -r z_examples/numd_config_example1.nu)
 ```
 
 Example config file (`z_examples/numd_config_example1.nu`):

@@ -1,6 +1,6 @@
 # run-once fence option
 
-After numd run, the run-once block below should become no-run with output preserved.
+After numd render, the run-once block below should become no-run with output preserved.
 
 ```nu run-once
 2 + 2

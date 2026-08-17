@@ -113,15 +113,22 @@ def collect-integration-results-inner [--update]: nothing -> table {
     numd clear-outputs $simple_md --echo
     | save -f ($simple_md | build-modified-path --suffix '_with_no_output')
 
+    # Why: `glob` returns a stream, so the directory walk would keep running while `par-each`
+    # already executes examples — and the examples write temp files into each other's folders
+    # (2_numd_commands_explanations saves an intermediate script next to simple_markdown.md).
+    # A temp `.nu` script then entered the test set and failed as invalid markdown, depending on
+    # readdir order. `let` collects the stream, so the test set is fixed before anything runs.
+    let example_files = glob z_examples/*/*.md --exclude [
+        */*_with_no_output*
+        */*_customized*
+        */8_parse_frontmatter
+        */run_once*
+    ]
+
     # Run all integration tests and collect results
     let results = (
         # Strip markdown and run main set of .md files in one loop
-        glob z_examples/*/*.md --exclude [
-            */*_with_no_output*
-            */*_customized*
-            */8_parse_frontmatter
-            */run_once*
-        ]
+        $example_files
         | par-each --keep-order {|file|
             run-integration-test $file {
                 # Strip markdown
